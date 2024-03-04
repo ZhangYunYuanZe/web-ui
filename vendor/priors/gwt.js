@@ -26,6 +26,10 @@ function getProm(url) {
     return getWithHeadersProm(url, []);
 }
 
+function isTypedArray( arr ) {
+  return ArrayBuffer.isView( arr ) && !(arr instanceof DataView);
+}
+
 function getWithHeadersProm(url, headers) {
     var future = peergos.shared.util.Futures.incomplete();
     var req = new XMLHttpRequest();
@@ -106,10 +110,16 @@ function postProm(url, data, timeout) {
 
 	req.send(data);
     }).then(function(result, err) {
-        if (err != null)
+        if (err != null) {
             future.completeExceptionally(java.lang.Throwable.of(err));
-        else
-            future.complete(convertToByteArray(result));
+        } else {
+            if (isTypedArray(result)) {
+                future.complete(convertToByteArray(result));
+            } else {
+                console.log("how did we get here?");
+                future.completeExceptionally(java.lang.Throwable.of(err));
+            }
+        }
     }, function(err) {
 	future.completeExceptionally(java.lang.Throwable.of(err)); 
     });
@@ -164,10 +174,16 @@ function postMultipartProm(url, dataArrays, timeout) {
 
         req.send(form);
     }).then(function(result, err) {
-        if (err != null)
+        if (err != null) {
             future.completeExceptionally(java.lang.Throwable.of(err));
-        else
-            future.complete(convertToByteArray(result));
+        } else {
+            if (isTypedArray(result)) {
+                future.complete(convertToByteArray(result));
+            } else {
+                console.log("how did we get here?");
+                future.completeExceptionally(java.lang.Throwable.of(err));
+            }
+        }
     }, function(err) {
 	future.completeExceptionally(java.lang.Throwable.of(err)); 
     });
@@ -210,10 +226,16 @@ function putProm(url, data, headers) {
 
 	req.send(data);
     }).then(function(result, err) {
-        if (err != null)
+        if (err != null) {
             future.completeExceptionally(java.lang.Throwable.of(err));
-        else
-            future.complete(convertToByteArray(result));
+        } else {
+            if (isTypedArray(result)) {
+                future.complete(convertToByteArray(result));
+            } else {
+                console.log("how did we get here?");
+                future.completeExceptionally(java.lang.Throwable.of(err));
+            }
+        }
     }, function(err) {
 	future.completeExceptionally(java.lang.Throwable.of(err)); 
     });
